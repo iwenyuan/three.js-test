@@ -8,6 +8,12 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ALayout: typeof import('@arco-design/web-vue')['Layout']
+    ALayoutContent: typeof import('@arco-design/web-vue')['LayoutContent']
+    ALayoutSider: typeof import('@arco-design/web-vue')['LayoutSider']
+    AMenu: typeof import('@arco-design/web-vue')['Menu']
+    AMenuItem: typeof import('@arco-design/web-vue')['MenuItem']
+    OperateBox: typeof import('./src/components/OperateBox.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

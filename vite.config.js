@@ -12,18 +12,32 @@ export default defineConfig({
   plugins: [
     vue(),
     AutoImport({
-      import: ['vue'],
-      resolvers: [ArcoResolver()]
+      include: [
+        /\.[tj]sx?$/, // .ts, .tsx, .js, .jsx
+        /\.vue$/,
+        /\.vue\?vue/, // .vue
+        /\.md$/ // .md
+      ],
+      imports: [
+        'vue',
+        'vue-router',
+        {
+          axios: [['default', 'axios']]
+        }
+      ],
+      dts: true
     }),
     Components({
+      dts: true,
       resolvers: [
         ArcoResolver({
+          resolveIcons: true,
           sideEffect: true
         })
       ]
     }),
     vitePluginForArco({
-      style: 'css'
+      varsInjectScope: ['*']
     })
   ],
   resolve: {

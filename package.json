@@ -11,6 +11,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@amap/amap-jsapi-loader": "^1.0.1",
     "@arco-plugins/vite-vue": "^1.4.5",
     "pinia": "^2.1.7",
     "three": "0.142.0",
@@ -26,6 +27,8 @@
     "@vue/eslint-config-prettier": "^9.0.0",
     "eslint": "^8.57.0",
     "eslint-plugin-vue": "^9.23.0",
+    "less": "^4.2.2",
+    "less-loader": "^12.2.0",
     "prettier": "^3.2.5",
     "vite": "^5.2.8"
   }
