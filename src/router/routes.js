@@ -6,6 +6,14 @@ const routes = [
     meta: {
       title: '电子围栏'
     }
+  },
+  {
+    path: '/flow/line',
+    name: 'FlowLine',
+    component: () => import('@/views/FlowLine.vue'),
+    meta: {
+      title: '流动线'
+    }
   }
 ]
 

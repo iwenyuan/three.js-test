@@ -22,9 +22,13 @@ onMounted(() => {
   })
     .then((AMap) => {
       const map = new AMap.Map('map', {
+        zooms: [2, 20],
+        zoom: 10,
+        pitch: 0,
+        showLabel: false,
         viewMode: '3D',
-        zoom: 11,
-        center: [121.130855, 31.457456]
+        center: [121.130855, 31.457456],
+        mapStyle: 'amap://styles/dark'
       })
       map.on('click', (e) => {
         console.log([e.lnglat.getLng(), e.lnglat.getLat()])
