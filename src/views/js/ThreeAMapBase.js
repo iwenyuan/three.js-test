@@ -3,26 +3,29 @@ import * as THREE from 'three'
 import Stats from 'three/examples/jsm/libs/stats.module.js'
 
 export default class ThreeAMapBase {
-  constructor() {
+  constructor(config) {
+    this._conf = {
+      ...config
+    }
     this.isStats = false
   }
 
   // 绘制
-  createChart() { }
+  createChart() {}
 
   // 渲染动画
-  animateAction() { }
+  animateAction() {}
 
-  init(map, dom) {
+  init(map) {
     this.map = map
-    this.container = dom
+    this.container = map.getContainer()
     // 数据转换工具,经纬度坐标转空间坐标
     this.customCoords = this.map.customCoords
     // 加载器
     THREE.Cache.enabled = true
 
     // 创建GL图层
-    const glLayer = new AMap.GLCustomLayer({
+    this.glLayer = new AMap.GLCustomLayer({
       init: (gl) => {
         this.initThree(gl)
         this.createChart()
@@ -52,7 +55,7 @@ export default class ThreeAMapBase {
       }
     })
 
-    this.map.add(glLayer)
+    this.map.add(this.glLayer)
 
     window.addEventListener('resize', this.onResize.bind(this))
     window.addEventListener('unload', this.clearAll.bind(this))
@@ -120,46 +123,48 @@ export default class ThreeAMapBase {
       this.stats = null
     }
 
+    this.map.remove(this.glLayer)
+
     this.clearEle(this.scene)
   }
 
   clearObj(scene) {
     this.clearEle(scene)
-    obj?.parent?.remove && obj.parent.remove(obj);
+    scene?.parent?.remove && scene.parent.remove(scene)
   }
 
   clearEle(scene) {
     if (scene) {
-      if (obj.children && obj.children.length > 0) {
-        this.cleanNext(obj, 0);
-        obj.remove(...obj.children);
+      if (scene.children && scene.children.length > 0) {
+        this.cleanNext(scene, 0)
+        scene.remove(...scene.children)
       }
-      if (obj.geometry) {
-        obj.geometry.dispose && obj.geometry.dispose();
+      if (scene.geometry) {
+        scene.geometry.dispose && scene.geometry.dispose()
       }
-      if (obj instanceof THREE.Material) {
-        for (const v of Object.values(obj)) {
+      if (scene instanceof THREE.Material) {
+        for (const v of Object.values(scene)) {
           if (v instanceof THREE.Texture) {
-            v.dispose && v.dispose();
+            v.dispose && v.dispose()
           }
         }
 
-        obj.dispose && obj.dispose();
+        scene.dispose && scene.dispose()
       }
-      if (Array.isArray(obj)) {
-        obj.material.forEach((m) => {
-          this.clearEle(m);
-        });
+      if (Array.isArray(scene)) {
+        scene.material.forEach((m) => {
+          this.clearEle(m)
+        })
       }
     }
   }
 
-  cleanNext(obj, idx) {
-    if (idx < obj.children.length) {
-      this.clearEle(obj.children[idx]);
+  cleanNext(scene, idx) {
+    if (idx < scene.children.length) {
+      this.clearEle(scene.children[idx])
     }
-    if (idx + 1 < obj.children.length) {
-      this.cleanNext(obj, idx + 1);
+    if (idx + 1 < scene.children.length) {
+      this.cleanNext(scene, idx + 1)
     }
   }
 }

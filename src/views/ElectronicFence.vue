@@ -9,6 +9,7 @@ const data = TC_BORDER.features[0].geometry.coordinates[0][0]
 let scene, camera, renderer
 let map, container, customCoords
 let texture, shaderMaterial
+let glCustomLayer
 const height = 1000
 
 const initLayer = () => {
@@ -16,7 +17,7 @@ const initLayer = () => {
   container = mapStore.getContainer()
   customCoords = map.customCoords
 
-  const layer = new AMap.GLCustomLayer({
+  glCustomLayer = new AMap.GLCustomLayer({
     zIndex: 9999,
     visible: true,
     init: (gl) => {
@@ -39,7 +40,7 @@ const initLayer = () => {
     }
   })
 
-  map.add(layer)
+  map.add(glCustomLayer)
 }
 
 /**
@@ -194,7 +195,7 @@ const animate = () => {
 onUnmounted(() => {
   cancelAnimationFrame(animationFrameId)
   animationFrameId = null
-  map.remove(glCustumerLayer)
+  map.remove(glCustomLayer)
 })
 </script>
 

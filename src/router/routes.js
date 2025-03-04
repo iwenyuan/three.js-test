@@ -14,6 +14,22 @@ const routes = [
     meta: {
       title: '流动线'
     }
+  },
+  {
+    path: '/quarter',
+    name: 'Quarter',
+    component: () => import('@/views/Quarter.vue'),
+    meta: {
+      title: '建筑单体化'
+    }
+  },
+  {
+    path: '/terrain/polygon',
+    name: 'TerrainPolygon',
+    component: () => import('@/views/TerrainPolygon.vue'),
+    meta: {
+      title: '3D区域地块'
+    }
   }
 ]
 

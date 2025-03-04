@@ -6,7 +6,7 @@ import TC_BORDER from '/public/data/TC_BORDER.json'
 
 const mapStore = useMapStore()
 let data = null
-
+let layer = null
 class FlowLineLayer extends ThreeAMapBase {
   constructor() {
     super()
@@ -58,9 +58,14 @@ class FlowLineLayer extends ThreeAMapBase {
 const initLayer = () => {
   const customCoords = mapStore.getMap().customCoords
   data = customCoords.lngLatsToCoords(TC_BORDER.features[0].geometry.coordinates[0][0])
-  const layer = new FlowLineLayer()
-  layer.init(mapStore.getMap(), mapStore.getContainer())
+  layer = new FlowLineLayer()
+  layer.init(mapStore.getMap())
 }
+
+onBeforeUnmount(() => {
+  layer.clearAll()
+  console.log(mapStore.getMap().getLayers())
+})
 </script>
 
 <template>
