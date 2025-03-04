@@ -1,6 +1,7 @@
 <script setup>
 import * as THREE from 'three'
 import { TessellateModifier } from 'three/examples/jsm/modifiers/TessellateModifier.js'
+import { MeshLineGeometry, MeshLineMaterial } from '@/plugins/meshline.js'
 import GLLayer from './js/GLLayer'
 import DongYuan from '/mock/dongyuanxian/dongyuan_polyline.json'
 import { useMapStore } from '@/stores/map'
@@ -17,6 +18,9 @@ class TerrainPolygonLayer extends GLLayer {
   // 缓存侧边网格体的相关属性
   _sideMeshProps = {}
 
+  // 边界线相关属性
+  _edgeMeshProps = {}
+
   // CanvasTexture贴图的最大尺寸
   // 影响到贴图的清晰程度
   _CANVAS_MAX_LEN = 2000
@@ -26,7 +30,7 @@ class TerrainPolygonLayer extends GLLayer {
       data: null,
       isStats: true,
       lineWidth: 100.0,
-      lineColor: 'green',
+      lineColor: '#ffffff',
       sizeAttenuation: 1, // 线宽与镜头距离相关联
       ...config
     }
@@ -35,7 +39,11 @@ class TerrainPolygonLayer extends GLLayer {
     this.initData(this._conf.data)
   }
 
-  animateAction() {}
+  animateAction() {
+    if (this._edgeMesh) {
+      this._edgeMesh.material.uniforms.offset.value.x -= 0.005
+    }
+  }
 
   async onReady() {
     // 计算包围盒
@@ -107,6 +115,12 @@ class TerrainPolygonLayer extends GLLayer {
     texture.wrapT = THREE.RepeatWrapping
     texture.offset.set(0, 1)
     this._sideMeshProps.textureMap = texture
+
+    // 边界线
+    const edgeTexture = await new THREE.TextureLoader().load(this._conf.edgeTextureMapURL)
+    edgeTexture.wrapS = THREE.RepeatWrapping
+    edgeTexture.wrapT = THREE.RepeatWrapping
+    this._edgeMeshProps.textureMap = edgeTexture
   }
 
   /**
@@ -175,21 +189,23 @@ class TerrainPolygonLayer extends GLLayer {
     path.forEach(([x, y]) => {
       points.push(new THREE.Vector3(x, y, this._conf.altitude + 20))
     })
-    const line = new THREE.BufferGeometry()
-    line.setFromPoints(points)
+
+    const line = new MeshLineGeometry()
+    line.setPoints(points)
 
     const { sizeAttenuation, lineWidth, lineColor } = this._conf
 
-    const material = new THREE.LineBasicMaterial({
-      color: new THREE.Color(lineColor),
-      linewidth: lineWidth, // 由于渲染器限制，线宽始终为1
-      sizeAttenuation, // 线宽是否随相机距离而衰减
+    const material = new MeshLineMaterial({
+      map: this._edgeMeshProps.textureMap,
+      useMap: 1,
+      // color: new THREE.Color(lineColor),
+      opacity: 1,
       transparent: true,
-      opacity: 0.8
+      depthTest: true,
+      sizeAttenuation: sizeAttenuation ? 1 : 0,
+      lineWidth
     })
-
-    const mesh = new THREE.Line(line, material)
-
+    const mesh = new THREE.Mesh(line, material)
     this.scene.add(mesh)
 
     this._edgeMesh = mesh
@@ -407,7 +423,8 @@ const textureArr = {
   textureMapURL: `/mock/dongyuanxian/dongyuan_wx.jpg`, // 普通贴图
   normalMapURL: `/mock/dongyuanxian/dongyuan_normal.jpg`, // 法线贴图
   displacementMapURL: `/mock/dongyuanxian/dongyuan_dem2.jpg`, // 位移贴图
-  sideTextureMapURL: `/public/texture/texture_cake_1.png` // 侧面的贴图
+  sideTextureMapURL: `/public/texture/texture_cake_1.png`, // 侧面的贴图
+  edgeTextureMapURL: `/public/texture/spriteLine.png` // 边缘的贴图
 }
 
 const config = {
